@@ -1,5 +1,10 @@
 # Universal Antislop
 
+[![npm version](https://img.shields.io/npm/v/universal-antislop.svg)](https://www.npmjs.com/package/universal-antislop)
+[![CI](https://github.com/your-username/universal-antislop/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/universal-antislop/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+
 Production-ready anti-slop quality gate: parallel checkers + LLM MITM judge + Hard Gate.
 
 ## What it does

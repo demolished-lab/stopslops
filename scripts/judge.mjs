@@ -6,11 +6,24 @@ import { readFile, stat } from 'node:fs/promises';
 import { join, resolve, relative } from 'node:path';
 import http from 'node:http';
 import https from 'node:https';
-import { log, error, debug } from './logger.mjs';
+import { log, error, debug, trackJudge, setPerformance } from './logger.mjs';
 
 const ROOT = process.env.ANTISLOP_ROOT || "C:/Users/Raja/universal-antislop";
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB limit
-const ALLOWED_CATEGORIES = ['general-code','tests','api','docs','prompts','git','config','thinking','ui','copywriting','human','layoutmobile','code'];
+const ALLOWED_CATEGORIES = ['general-code', 'tests', 'api', 'docs', 'prompts', 'git', 'config', 'thinking', 'ui', 'copywriting', 'human', 'layoutmobile', 'code'];
+
+// Graceful error handling
+process.on('uncaughtException', (e) => {
+  error('Uncaught exception:', e.message);
+  trackJudge('error');
+  process.exit(2);
+});
+
+process.on('unhandledRejection', (e) => {
+  error('Unhandled rejection:', e?.message || e);
+  trackJudge('error');
+  process.exit(2);
+});
 
 const args = process.argv.slice(2);
 function arg(name){ const i=args.indexOf(name); return i>=0?args[i+1]:null; }
@@ -163,21 +176,29 @@ async function llmGrade(){
 }
 
 // Run both and merge
+const startTime = Date.now();
 const [llmFindings] = await Promise.all([llmGrade()]);
+setPerformance('judgeMs', Date.now() - startTime);
+
 const allFindings = [...findings, ...(llmFindings || [])];
 
 // Deduplicate findings by rule
 const seen = new Set();
 const deduped = allFindings.filter(f => {
   const key = f.rule + '|' + f.severity;
-  if(seen.has(key)) return false;
+  if (seen.has(key)) return false;
   seen.add(key);
   return true;
 });
 
 // Output
-if(deduped.length) console.log(JSON.stringify({category, findings:deduped},null,2));
-else console.log(JSON.stringify({category, findings:[], verdict:'clean (heuristic + LLM pass)'},null,2));
+if (deduped.length) {
+  console.log(JSON.stringify({ category, findings: deduped }, null, 2));
+  trackJudge(deduped.some(f => f.severity === 3) ? 'fail' : 'pass');
+} else {
+  console.log(JSON.stringify({ category, findings: [], verdict: 'clean (heuristic + LLM pass)' }, null, 2));
+  trackJudge('pass');
+}
 
 // Exit code: 1 if any severity 3
-process.exit(deduped.some(f=>f.severity===3) ? 1 : 0);
+process.exit(deduped.some(f => f.severity === 3) ? 1 : 0);

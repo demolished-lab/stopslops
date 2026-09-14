@@ -6,7 +6,12 @@ import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { log, error, debug } from './logger.mjs';
+import { log, error, debug, trackCheck, trackFile, setPerformance, printMetrics } from './logger.mjs';
+
+// Graceful shutdown
+let shuttingDown = false;
+process.on('SIGINT', () => { shuttingDown = true; });
+process.on('SIGTERM', () => { shuttingDown = true; });
 
 const ROOT = process.env.ANTISLOP_ROOT || "C:/Users/Raja/universal-antislop";
 const TARGET = process.argv.includes('--path') ? process.argv[process.argv.indexOf('--path') + 1] : ROOT;
@@ -31,21 +36,26 @@ await mkdir(CACHE,{recursive:true});
 
 function hashFile(buf){ return createHash('sha256').update(buf).digest('hex').slice(0,12); }
 
-async function runOne(cat, cfg){
+async function runOne(cat, cfg) {
+  if (shuttingDown) return { cat, skipped: 'shutdown', violations: [] };
+  
   const checker = cfg.checker;
-  if(!checker) return {cat, skipped:'judge-only', violations:[]};
+  if (!checker) return { cat, skipped: 'judge-only', violations: [] };
   const checkerPath = join(ROOT, checker);
-  if(!existsSync(checkerPath)) return {cat, skipped:'config-missing', violations:[]};
+  if (!existsSync(checkerPath)) return { cat, skipped: 'config-missing', violations: [] };
 
-  const cacheKey = hashFile(Buffer.from(cat+JSON.stringify(cfg)));
+  const cacheKey = hashFile(Buffer.from(cat + JSON.stringify(cfg)));
   const cacheFile = join(CACHE, `${cat}-${cacheKey}.json`);
-  if(existsSync(cacheFile)){
-    try{ 
-      const v=JSON.parse(await readFile(cacheFile,'utf8')); 
+  if (existsSync(cacheFile)) {
+    try {
+      const v = JSON.parse(await readFile(cacheFile, 'utf8'));
       debug(`Cache hit for ${cat}`);
-      return {cat, cached:true, ...v}; 
-    }catch(e){
-      debug(`Cache corrupted for ${cat}, re-running`);
+      trackFile(true);
+      trackCheck(cat, 'pass');
+      return { cat, cached: true, ...v };
+    } catch (e) {
+      debug(`Cache corrupted for ${cat}, re-running: ${e.message}`);
+      trackCheck(cat, 'error');
     }
   }
 
@@ -53,16 +63,23 @@ async function runOne(cat, cfg){
   try {
     debug(`Running checker for ${cat}`);
     checkerResult = await runChecker(cat, checkerPath, REG.categories[cat].vendor || '');
-  } catch(e) {
+  } catch (e) {
     error(`Checker failed for ${cat}:`, e.message);
-    checkerResult = { violations: [{rule:'R-0', severity:1, reason:'checker error', evidence:String(e)}] };
+    trackCheck(cat, 'error');
+    checkerResult = { violations: [{ rule: 'R-0', severity: 1, reason: 'checker error', evidence: String(e) }] };
   }
   
-  const res = {cat, violations: checkerResult.violations || []};
+  // Track violations
+  const hasViolations = checkerResult.violations?.length > 0;
+  const hasHardFail = checkerResult.violations?.some(v => v.severity === 3);
+  trackCheck(cat, hasHardFail ? 'fail' : hasViolations ? 'pass' : 'pass');
+  trackFile(false);
+  
+  const res = { cat, violations: checkerResult.violations || [] };
   try {
     await writeFile(cacheFile, JSON.stringify(res), 'utf8');
-  } catch(e) {
-    debug(`Failed to write cache for ${cat}:`, e.message);
+  } catch (e) {
+    debug(`Failed to write cache for ${cat}: ${e.message}`);
   }
   return res;
 }
@@ -369,13 +386,22 @@ async function runCodeCheck(base){
 }
 
 // ---- main ----
-const results = await Promise.all(Object.entries(REG.categories).map(([cat,cfg])=>runOne(cat,cfg)));
-const hardFails = results.filter(r=>r.violations.some(v=>v.severity===3)).length;
-for(const r of results){
-  if(r.skipped==='judge-only') { console.log(`SKIP ${r.cat} (judge-only, no static checker)`); continue; }
-  if(r.skipped==='config-missing') { console.log(`SKIP ${r.cat} (no config)`); continue; }
+const startTime = Date.now();
+const results = await Promise.all(Object.entries(REG.categories).map(([cat, cfg]) => runOne(cat, cfg)));
+setPerformance('checkersMs', Date.now() - startTime);
+
+const hardFails = results.filter(r => r.violations.some(v => v.severity === 3)).length;
+for (const r of results) {
+  if (r.skipped === 'judge-only') { console.log(`SKIP ${r.cat} (judge-only, no static checker)`); continue; }
+  if (r.skipped === 'config-missing') { console.log(`SKIP ${r.cat} (no config)`); continue; }
+  if (r.skipped === 'shutdown') { console.log(`SKIP ${r.cat} (shutdown)`); continue; }
   const tag = r.cached ? 'CACHED' : 'OK';
   const v = r.violations.length ? `${r.violations.length} violation(s)` : 'clean';
   console.log(`${tag} ${r.cat} — ${v}`);
 }
-process.exit(hardFails?1:0);
+
+if (process.env.LOG_LEVEL === 'debug') {
+  printMetrics();
+}
+
+process.exit(hardFails ? 1 : 0);

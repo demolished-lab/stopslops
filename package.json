@@ -14,10 +14,15 @@
     "judge": "node ./scripts/judge.mjs",
     "audit": "node ./scripts/audit.mjs",
     "security": "node ./scripts/security-audit.mjs",
+    "security:full": "node ./scripts/security-audit-full.mjs",
+    "typecheck": "node ./scripts/typecheck.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "oxlint skills/",
-    "prepublishOnly": "pnpm test && pnpm check"
+    "prepublishOnly": "pnpm test && pnpm check",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish"
   },
   "keywords": [
     "anti-slop",
@@ -46,6 +51,7 @@
     "antislop.md"
   ],
   "devDependencies": {
+    "@changesets/cli": "^2.27.0",
     "@stoplight/spectral-cli": "^6.16.3",
     "@types/node": "^20.12.0",
     "oxlint": "^1.83.0",
