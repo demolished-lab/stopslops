@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: universal-antislop
+  labels:
+    app: universal-antislop
+spec:
+  selector:
+    app: universal-antislop
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+  - name: health
+    port: 8080
+    targetPort: 3001
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: universal-antislop
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - antislop.example.com
+    secretName: antislop-tls
+  rules:
+  - host: antislop.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: universal-antislop
+            port:
+              number: 80

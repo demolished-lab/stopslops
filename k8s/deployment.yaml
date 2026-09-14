@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: universal-antislop
+  labels:
+    app: universal-antislop
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: universal-antislop
+  template:
+    metadata:
+      labels:
+        app: universal-antislop
+    spec:
+      containers:
+      - name: antislop
+        image: universal-antislop:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        - containerPort: 3001
+          name: health
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: ANTISLOP_ROOT
+          value: "/app"
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: antislop-secrets
+              key: api-key
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: data
+          mountPath: /app/.data
+        - name: cache
+          mountPath: /app/.cache
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: antislop-data
+      - name: cache
+        emptyDir: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: antislop-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: antislop-secrets
+type: Opaque
+stringData:
+  api-key: "CHANGE_ME_TO_REAL_KEY"

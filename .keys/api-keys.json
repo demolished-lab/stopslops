@@ -1,0 +1,17 @@
+{
+  "keys": [
+    {
+      "id": "e402eb92-5cfe-4a89-b3e1-0a8e2551a712",
+      "name": "test",
+      "key": "07b8d36b24a7111ccc8e01bdb0f09c468780d2eb50b91acf0fc417be68df8bdf",
+      "prefix": "antislop_f1fe9542bb2...",
+      "permissions": [
+        "read",
+        "write"
+      ],
+      "createdAt": "2026-09-14T17:37:30.653Z",
+      "lastUsed": null,
+      "active": true
+    }
+  ]
+}

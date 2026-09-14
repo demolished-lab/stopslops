@@ -29,6 +29,19 @@
     "auto:check": "node ./scripts/auto.mjs check",
     "auto:fix": "node ./scripts/auto.mjs fix",
     "auto:fix:dry": "node ./scripts/auto.mjs fix:dry",
+    "auth": "node ./scripts/auth.mjs",
+    "auth:create": "node ./scripts/auth.mjs create",
+    "auth:list": "node ./scripts/auth.mjs list",
+    "storage": "node ./scripts/storage.mjs",
+    "storage:init": "node ./scripts/storage.mjs init",
+    "storage:stats": "node ./scripts/storage.mjs stats",
+    "storage:backup": "node ./scripts/storage.mjs backup",
+    "monitor": "node ./scripts/monitoring.mjs",
+    "monitor:server": "node ./scripts/monitoring.mjs server",
+    "monitor:print": "node ./scripts/monitoring.mjs print",
+    "fix:ast": "node ./scripts/ast-fixer.mjs",
+    "k8s:deploy": "kubectl apply -f k8s/",
+    "k8s:delete": "kubectl delete -f k8s/",
     "prepublishOnly": "pnpm test && pnpm check",
     "changeset": "changeset",
     "version": "changeset version",
@@ -63,13 +76,14 @@
     "registry.json",
     "antislop.md"
   ],
+  "dependencies": {},
   "devDependencies": {
     "@changesets/cli": "^2.27.0",
     "@stoplight/spectral-cli": "^6.16.3",
     "@types/node": "^20.12.0",
     "oxlint": "^1.83.0",
     "typescript": "^5.4.5",
-    "vitest": "^3.2.1"
+    "vitest": "^5.0.0"
   },
   "peerDependencies": {
     "node": ">=18.0.0"

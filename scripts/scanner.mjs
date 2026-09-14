@@ -333,22 +333,23 @@ export class CategorySelector {
 
   addFrameworkCategories() {
     const { frameworks } = this.scanResults;
+    const frameworkSet = new Set(frameworks);
     
-    if (frameworks.has('react') || frameworks.has('vue') || frameworks.has('angular') || frameworks.has('svelte')) {
+    if (frameworkSet.has('react') || frameworkSet.has('vue') || frameworkSet.has('angular') || frameworkSet.has('svelte')) {
       this.addCategory('ui', 'Frontend framework detected');
       this.addCategory('layoutmobile', 'Mobile responsiveness needed');
     }
     
-    if (frameworks.has('express') || frameworks.has('fastify') || frameworks.has('django') || frameworks.has('flask')) {
+    if (frameworkSet.has('express') || frameworkSet.has('fastify') || frameworkSet.has('django') || frameworkSet.has('flask')) {
       this.addCategory('api', 'Backend framework detected');
     }
     
-    if (frameworks.has('next') || frameworks.has('nuxt')) {
+    if (frameworkSet.has('next') || frameworkSet.has('nuxt')) {
       this.addCategory('ui', 'Full-stack framework');
       this.addCategory('api', 'API routes detected');
     }
     
-    if (frameworks.has('terraform') || frameworks.has('docker') || frameworks.has('kubernetes')) {
+    if (frameworkSet.has('terraform') || frameworkSet.has('docker') || frameworkSet.has('kubernetes')) {
       this.addCategory('config', 'Infrastructure as Code');
     }
   }
