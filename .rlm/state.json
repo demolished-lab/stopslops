@@ -1,0 +1,26 @@
+{
+  "metrics": {
+    "interactions": 1,
+    "successes": 1,
+    "failures": 0,
+    "improvements": 0,
+    "deployments": 0,
+    "score": 33
+  },
+  "memory": [
+    {
+      "id": "mem_1789408507551_fi7kcqco8",
+      "timestamp": "2026-09-14T17:55:07.551Z",
+      "type": "test",
+      "input": "hello",
+      "output": "world",
+      "success": true,
+      "duration": 100,
+      "context": {},
+      "score": 13
+    }
+  ],
+  "proposals": [],
+  "evolutionLog": [],
+  "lastSaved": "2026-09-14T17:55:07.552Z"
+}
