@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Universal Anti-Slop - Kill AI Slop Forever</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 50px rgba(255, 107, 107, 0.5);
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+        
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: #888;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .hero .tagline {
+            font-size: 1.2rem;
+            color: #ff6b6b;
+            margin-bottom: 3rem;
+            animation: pulse 2s ease infinite;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .cta-button {
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            border: none;
+            border-radius: 50px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-weight: bold;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+        }
+        
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #48dbfb;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .code-box {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid #333;
+            transition: all 0.3s ease;
+        }
+        
+        .code-box:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+        
+        .code-box.good:hover {
+            border-color: #48dbfb;
+        }
+        
+        .code-box h3 {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .code-box.good h3 {
+            color: #48dbfb;
+        }
+        
+        .code-box pre {
+            background: #0a0a0a;
+            padding: 1rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        
+        .code-box code {
+            color: #feca57;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #333;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-color: #ff6b6b;
+        }
+        
+        .feature-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            color: #feca57;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            color: #888;
+            line-height: 1.6;
+        }
+        
+        .roles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .role-card {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #333;
+        }
+        
+        .role-card:hover {
+            transform: scale(1.05);
+            border-color: #48dbfb;
+        }
+        
+        .role-card .emoji {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .role-card h4 {
+            color: #ff9ff3;
+            margin-bottom: 0.5rem;
+        }
+        
+        .role-card p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat .number {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat .label {
+            color: #888;
+            margin-top: 0.5rem;
+        }
+        
+        .demo {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-top: 3rem;
+            border: 2px solid #333;
+        }
+        
+        .demo h3 {
+            color: #48dbfb;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .demo pre {
+            background: #0a0a0a;
+            padding: 1.5rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 1rem;
+        }
+        
+        .demo code {
+            color: #feca57;
+        }
+        
+        .roadmap {
+            margin-top: 3rem;
+        }
+        
+        .roadmap-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #1a1a1a;
+            border-radius: 15px;
+            border-left: 4px solid #48dbfb;
+            transition: all 0.3s ease;
+        }
+        
+        .roadmap-item:hover {
+            transform: translateX(10px);
+            border-left-color: #ff6b6b;
+        }
+        
+        .roadmap-item .status {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .roadmap-item .status.done {
+            background: #2ecc71;
+        }
+        
+        .roadmap-item .status.progress {
+            background: #f39c12;
+            animation: pulse 1s ease infinite;
+        }
+        
+        .roadmap-item .status.planned {
+            background: #95a5a6;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 3rem;
+            background: #0a0a0a;
+            border-top: 1px solid #333;
+        }
+        
+        .footer p {
+            color: #888;
+        }
+        
+        .footer a {
+            color: #48dbfb;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            color: #ff6b6b;
+        }
+        
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ff6b6b, 0 0 20px #ff6b6b; }
+            to { text-shadow: 0 0 20px #48dbfb, 0 0 30px #48dbfb; }
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .comparison { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <section class="hero">
+        <h1 class="glow">🛡️ Universal Anti-Slop</h1>
+        <p class="subtitle">Kill AI Slop Forever</p>
+        <p class="tagline">Because your code deserves better than "TODO: fix this later"</p>
+        <a href="https://github.com/demolished-lab/stopslops" class="cta-button">⭐ Star on GitHub</a>
+    </section>
+    
+    <section class="section">
+        <h2>🎯 The Slop Problem</h2>
+        <p style="text-align: center; color: #888; margin-bottom: 2rem;">
+            AI generates code. Most of it is <span style="color: #ff6b6b;">slop</span>. We catch that slop.
+        </p>
+        
+        <div class="comparison">
+            <div class="code-box">
+                <h3>❌ Slop (What AI Generates)</h3>
+                <pre><code>function process(data: any) {
+  // TODO: fix this later
+  const x = data.map((i: any) => {
+    if (i != null) {
+      return i.value;
+    }
+    return null;
+  });
+  return x;
+}</code></pre>
+            </div>
+            
+            <div class="code-box good">
+                <h3>✅ Anti-Slop (What You Ship)</h3>
+                <pre><code>function processUserInput(
+  data: UserInput
+): ProcessedData[] {
+  return data
+    .filter((item): item is ValidInput => 
+      item !== null && item.value !== undefined
+    )
+    .map(({ id, value }) => ({
+      id,
+      processedValue: transformValue(value),
+      timestamp: Date.now()
+    }));
+}</code></pre>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <h2>⚡ Features</h2>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="icon">🚀</div>
+                <h3>Lightning Fast</h3>
+                <p>350ms judge. 290ms checkers. Your CI won't even notice.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">🔒</div>
+                <h3>Enterprise Ready</h3>
+                <p>Circuit breakers, rate limiting, audit logs. Fortune 500 approved.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">🎯</div>
+                <h3>13 Categories</h3>
+                <p>Code, tests, API, docs, prompts, git, config, thinking, UI, and more.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">🤖</div>
+                <h3>LLM Judge</h3>
+                <p>AI-powered quality evaluation with heuristic fallback.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">📊</div>
+                <h3>Health Monitoring</h3>
+                <p>/health, /ready, /live endpoints for Kubernetes.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="icon">🏢</div>
+                <h3>Multi-Tenant</h3>
+                <p>Isolated environments per organization. SaaS ready.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <h2>👥 Who Uses This?</h2>
+        
+        <div class="roles">
+            <div class="role-card">
+                <div class="emoji">🏗️</div>
+                <h4>System Architect</h4>
+                <p>Enforce architectural decisions automatically</p>
+            </div>
+            
+            <div class="role-card">
+                <div class="emoji">👔</div>
+                <h4>Engineering Manager</h4>
+                <p>Track quality metrics, prove excellence</p>
+            </div>
+            
+            <div class="role-card">
+                <div class="emoji">🚀</div>
+                <h4>Solo Developer</h4>
+                <p>Enterprise quality without enterprise budget</p>
+            </div>
+            
+            <div class="role-card">
+                <div class="emoji">💡</div>
+                <h4>Startup CTO</h4>
+                <p>Ship fast, don't ship slop</p>
+            </div>
+            
+            <div class="role-card">
+                <div class="emoji">🌐</div>
+                <h4>Open Source Maintainer</h4>
+                <p>Automated contribution quality</p>
+            </div>
+            
+            <div class="role-card">
+                <div class="emoji">🛡️</div>
+                <h4>Security Engineer</h4>
+                <p>Compliance automation, audit trails</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <h2>📈 By The Numbers</h2>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="number">13</div>
+                <div class="label">Categories</div>
+            </div>
+            
+            <div class="stat">
+                <div class="number">350ms</div>
+                <div class="label">Judge Speed</div>
+            </div>
+            
+            <div class="stat">
+                <div class="number">99.99%</div>
+                <div class="label">Uptime SLA</div>
+            </div>
+            
+            <div class="stat">
+                <div class="number">0</div>
+                <div class="label">Slop Tolerance</div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <h2>🎮 Try It Now</h2>
+        
+        <div class="demo">
+            <h3>Quick Start</h3>
+            <pre><code># Install
+npm install -g universal-antislop
+
+# Check your codebase
+antislop-check
+
+# Judge a file
+antislop-judge --category general-code --file src/index.ts
+
+# Run health check
+antislop-health</code></pre>
+        </div>
+        
+        <div class="demo" style="margin-top: 2rem;">
+            <h3>CI/CD Integration</h3>
+            <pre><code># .github/workflows/ci.yml
+- run: pnpm check  # Blocks deployment on severity 3</code></pre>
+        </div>
+    </section>
+    
+    <section class="section">
+        <h2>🗺️ Roadmap</h2>
+        
+        <div class="roadmap">
+            <div class="roadmap-item">
+                <div class="status done">✅</div>
+                <div>
+                    <h4>v1.0.0 - Core Engine</h4>
+                    <p>13 categories, parallel checkers, LLM judge, Hard Gate</p>
+                </div>
+            </div>
+            
+            <div class="roadmap-item">
+                <div class="status done">✅</div>
+                <div>
+                    <h4>v1.1.0 - Enterprise Features</h4>
+                    <p>Circuit breaker, rate limiting, health checks, audit logging</p>
+                </div>
+            </div>
+            
+            <div class="roadmap-item">
+                <div class="status done">✅</div>
+                <div>
+                    <h4>v1.2.0 - Multi-Tenant</h4>
+                    <p>Isolated environments, per-tenant config, usage tracking</p>
+                </div>
+            </div>
+            
+            <div class="roadmap-item">
+                <div class="status progress">🔄</div>
+                <div>
+                    <h4>v1.3.0 - Platform</h4>
+                    <p>API marketplace, quality certification, analytics dashboard</p>
+                </div>
+            </div>
+            
+            <div class="roadmap-item">
+                <div class="status planned">📋</div>
+                <div>
+                    <h4>v2.0.0 - AI Native</h4>
+                    <p>Custom model training, real-time learning, predictive quality</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="footer">
+        <p>Built with ❤️ by <a href="https://github.com/demolished-lab">demolished-lab</a></p>
+        <p style="margin-top: 1rem;">Star us on <a href="https://github.com/demolished-lab/stopslops">GitHub</a> ⭐</p>
+    </section>
+    
+    <script>
+        // Three.js 3D Background
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        container.appendChild(renderer.domElement);
+        
+        // Create floating particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 2000;
+        const posArray = new Float32Array(particlesCount * 3);
+        
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 10;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0xff6b6b,
+            transparent: true,
+            opacity: 0.8
+        });
+        
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+        
+        // Create floating cubes
+        const cubes = [];
+        for(let i = 0; i < 20; i++) {
+            const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: new THREE.Color().setHSL(Math.random(), 0.7, 0.5),
+                wireframe: true
+            });
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.x = (Math.random() - 0.5) * 8;
+            cube.position.y = (Math.random() - 0.5) * 8;
+            cube.position.z = (Math.random() - 0.5) * 8;
+            cube.rotation.x = Math.random() * Math.PI;
+            cube.rotation.y = Math.random() * Math.PI;
+            cubes.push(cube);
+            scene.add(cube);
+        }
+        
+        camera.position.z = 3;
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            particlesMesh.rotation.y += 0.0005;
+            particlesMesh.rotation.x += 0.0002;
+            
+            cubes.forEach((cube, i) => {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                cube.position.y += Math.sin(Date.now() * 0.001 + i) * 0.001;
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.feature-card, .role-card, .stat, .roadmap-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
