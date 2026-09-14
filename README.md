@@ -94,6 +94,9 @@ function processUserInput(
 # Install
 npm install -g universal-antislop
 
+# Autonomous mode - detects your project and adapts
+antislop auto
+
 # Check your codebase
 antislop-check
 
@@ -102,6 +105,69 @@ antislop-judge --category general-code --file src/index.ts
 
 # Run health check
 antislop-health
+```
+
+---
+
+## 🤖 Autonomous Mode
+
+**It just works.** No configuration needed.
+
+### How It Works
+
+1. **Scans** your project (language, framework, structure)
+2. **Detects** what you're building
+3. **Auto-selects** relevant categories
+4. **Runs** only what matters
+5. **Enhances** based on context
+
+### Commands
+
+```bash
+# Scan project and detect context
+pnpm auto:scan
+
+# Run checks based on detected context
+pnpm auto:check
+
+# Auto-fix based on detected context
+pnpm auto:fix
+
+# Dry run - see what would be fixed
+pnpm auto:fix:dry
+```
+
+### What It Detects
+
+| Context | What It Does |
+|---------|--------------|
+| React/Vue/Angular | Enables UI, layoutmobile, tests |
+| Express/Fastify | Enables API, tests, docs |
+| TypeScript | Enables config, general-code |
+| Python | Enables config, general-code |
+| Has tests | Enables tests category |
+| Has docs | Enables docs category |
+| Infrastructure | Enables config, docs |
+
+### Example Output
+
+```
+🔍 Scanning project...
+📁 Found 47 files
+🌐 Languages: typescript, javascript
+⚛️ Frameworks: react, next
+📦 Project type: webapp
+🧪 Tests: yes
+📚 Docs: yes
+
+🎯 Selected categories:
+  • general-code: Base category for all projects
+  • git: Git best practices
+  • ui: Frontend framework detected
+  • layoutmobile: Mobile responsiveness needed
+  • tests: Test files detected
+  • docs: Documentation files detected
+  • config: JavaScript/TypeScript configuration
 ```
 
 ---
