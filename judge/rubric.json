@@ -1,0 +1,23 @@
+{
+  "version": "0.1.0",
+  "scale": "0=clean 1=nit 2=warn 3=block",
+  "categories": {
+    "general-code": [
+      {"rule":"R-40","signal":"unknown/any on public contract","hard":true},
+      {"rule":"R-40b","signal":"over-abstraction without purpose","hard":false}
+    ],
+    "tests":        [{"rule":"R-41","signal":"mocked world / tautology","hard":true}],
+    "api":          [{"rule":"R-42","signal":"phantom status/field","hard":true}],
+    "docs":         [{"rule":"R-43","signal":"stale/non-runnable example","hard":true}],
+    "prompts":      [{"rule":"R-44","signal":"injection / role bleed","hard":true}],
+    "git":          [{"rule":"R-45","signal":"vacuous / blob commit","hard":false}],
+    "config":       [{"rule":"R-46","signal":"secret / unpinned image / dead env","hard":true}],
+    "thinking":     [
+      {"rule":"R-47a","signal":"hedging density","hard":false},
+      {"rule":"R-47b","signal":"sycophancy / flattery","hard":true},
+      {"rule":"R-47c","signal":"fabricated CoT step","hard":true},
+      {"rule":"R-47d","signal":"verbosity without evidence","hard":false}
+    ]
+  },
+  "gate": {"hardThreshold":3, "purposeThreshold":2}
+}

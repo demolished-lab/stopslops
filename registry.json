@@ -1,0 +1,91 @@
+{
+  "version": "1.0.0",
+  "core": "antislop.md",
+  "philosophy": "Quality-focused, flexible guidelines — not rigid rules",
+  "categories": {
+    "ui": {
+      "skill": "skills/ui/SKILL.md",
+      "checker": "checkers/ui.json",
+      "focus": "Interfaces that are accessible and usable by everyone",
+      "qualitySignals": ["contrast ratios", "keyboard navigation", "semantic HTML"]
+    },
+    "copywriting": {
+      "skill": "skills/copywriting/SKILL.md",
+      "checker": null,
+      "focus": "Copy that communicates clearly and persuasively",
+      "qualitySignals": ["clarity", "evidence-backed claims", "appropriate tone"]
+    },
+    "human": {
+      "skill": "skills/human/SKILL.md",
+      "checker": "checkers/human.json",
+      "focus": "Experiences that work for all people",
+      "qualitySignals": ["accessibility", "keyboard support", "clear feedback"]
+    },
+    "layoutmobile": {
+      "skill": "skills/layoutmobile/SKILL.md",
+      "checker": null,
+      "focus": "Layouts that work on all screen sizes",
+      "qualitySignals": ["responsive units", "viewport meta", "touch targets"]
+    },
+    "code": {
+      "skill": "skills/code/SKILL.md",
+      "checker": null,
+      "focus": "Code that's readable, testable, and maintainable",
+      "qualitySignals": ["naming", "function size", "error handling", "type safety"]
+    },
+    "general-code": {
+      "skill": "skills/general-code/SKILL.md",
+      "checker": "checkers/oxlint.json",
+      "focus": "Code that's maintainable, type-safe, and clear in intent",
+      "qualitySignals": ["type safety", "clarity", "intentional tradeoffs"]
+    },
+    "tests": {
+      "skill": "skills/tests/SKILL.md",
+      "checker": "checkers/tests.json",
+      "focus": "Tests that catch real bugs and document behavior",
+      "qualitySignals": ["behavior testing", "clear names", "specific assertions"]
+    },
+    "api": {
+      "skill": "skills/api/SKILL.md",
+      "checker": "checkers/spectral.yaml",
+      "focus": "APIs that are consistent, well-documented, and evolving cleanly",
+      "qualitySignals": ["consistent naming", "clear status codes", "examples"]
+    },
+    "docs": {
+      "skill": "skills/docs/SKILL.md",
+      "checker": "checkers/docs.json",
+      "focus": "Documentation that helps users succeed",
+      "qualitySignals": ["working examples", "clear structure", "current content"]
+    },
+    "prompts": {
+      "skill": "skills/prompts/SKILL.md",
+      "checker": "checkers/prompts.json",
+      "focus": "Prompts that produce reliable, safe outputs",
+      "qualitySignals": ["input validation", "error handling", "security"]
+    },
+    "git": {
+      "skill": "skills/git/SKILL.md",
+      "checker": "checkers/commitlint.json",
+      "focus": "Commits that tell a clear story of changes",
+      "qualitySignals": ["descriptive messages", "issue references", "focused commits"]
+    },
+    "config": {
+      "skill": "skills/config/SKILL.md",
+      "checker": "checkers/config.json",
+      "focus": "Configuration that's secure, maintainable, and documented",
+      "qualitySignals": ["secret management", "version pinning", "documentation"]
+    },
+    "thinking": {
+      "skill": "skills/thinking/SKILL.md",
+      "checker": "checkers/thinking.json",
+      "focus": "Reasoning that's evidence-based, not hedged or sycophantic",
+      "qualitySignals": ["evidence-backed claims", "honest disagreement", "conciseness"]
+    }
+  },
+  "pipeline": {
+    "mode": "instant",
+    "stages": ["checkers(parallel, cached)", "judge(streaming MITM)", "gate(Hard/Purpose/Quality/Liveliness)"],
+    "cache": ".cache/antislop/*.json (keyed by file hash + registry version)",
+    "interrupt": "any Hard Gate fail short-circuits remaining stages"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "config",
+  "description": "Config quality checker (flexible, security-focused)",
+  "version": "1.0.0",
+  "philosophy": "Configuration should be secure, maintainable, and documented",
+  "patterns": {
+    "secrets": {
+      "patterns": ["sk-", "AKIA", "password=", "token=", "secret="],
+      "severity": 3,
+      "note": "Secrets in config files end up in version control. Use environment variables."
+    },
+    "unpinned-versions": {
+      "patterns": [":latest", ":stable"],
+      "severity": 1,
+      "note": "Unpinned versions can break deployments unexpectedly."
+    },
+    "hardcoded-paths": {
+      "patterns": ["/home/", "/usr/", "/var/"],
+      "severity": 1,
+      "note": "Hardcoded paths break when environments change."
+    }
+  }
+}

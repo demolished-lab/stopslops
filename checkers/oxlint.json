@@ -1,0 +1,23 @@
+{
+  "name": "general-code",
+  "description": "General code quality checker (flexible, intent-focused)",
+  "version": "1.0.0",
+  "philosophy": "Code quality is about maintainability, clarity, and intentional tradeoffs",
+  "rules": {
+    "type-safety": {
+      "patterns": ["unknown", "any", "object"],
+      "severity": 1,
+      "note": "Type safety improves quality, but some contexts require flexibility."
+    },
+    "clarity": {
+      "patterns": ["singleChar", "abbreviation"],
+      "severity": 1,
+      "note": "Clear names improve readability."
+    },
+    "error-handling": {
+      "patterns": ["try", "catch", "throw"],
+      "severity": 1,
+      "note": "Explicit error handling makes failure modes visible."
+    }
+  }
+}

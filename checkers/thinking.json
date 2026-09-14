@@ -1,0 +1,31 @@
+{
+  "name": "thinking",
+  "description": "Thinking quality checker (flexible, evidence-focused)",
+  "version": "1.0.0",
+  "philosophy": "Quality reasoning is evidence-based, not hedged or sycophantic",
+  "patterns": {
+    "hedging": {
+      "words": ["maybe", "perhaps", "might", "could", "possibly", "seems", "probably", "likely"],
+      "threshold": 5,
+      "severity": 1,
+      "note": "Some hedging is appropriate for uncertainty. Excessive hedging weakens claims."
+    },
+    "sycophancy": {
+      "patterns": ["your genius", "brilliant", "amazing", "flawless", "wonderful", "incredible", "fantastic", "perfect"],
+      "threshold": 2,
+      "severity": 2,
+      "note": "Honest feedback is more valuable than flattery."
+    },
+    "verbosity": {
+      "minWords": 200,
+      "maxWords": 500,
+      "severity": 1,
+      "note": "Concise, evidence-backed statements are more useful than verbose fluff."
+    },
+    "evidence": {
+      "requiredForClaims": ["faster", "better", "improved", "increased", "decreased", "optimized"],
+      "severity": 2,
+      "note": "Claims should be backed by evidence (benchmarks, data, examples)."
+    }
+  }
+}

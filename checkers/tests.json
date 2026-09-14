@@ -1,0 +1,23 @@
+{
+  "name": "tests",
+  "description": "Test quality checker (flexible, behavior-focused)",
+  "version": "1.0.0",
+  "philosophy": "Tests should catch real bugs and document behavior",
+  "patterns": {
+    "assertions": {
+      "required": true,
+      "severity": 1,
+      "note": "Tests without assertions don't verify behavior."
+    },
+    "descriptive-names": {
+      "required": true,
+      "severity": 1,
+      "note": "Test names should explain what's being tested."
+    },
+    "async-await": {
+      "required": true,
+      "severity": 1,
+      "note": "Async operations need await for reliable tests."
+    }
+  }
+}

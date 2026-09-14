@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Run checkers
+        run: pnpm check
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npm
+        run: pnpm publish --no-git-tag-version --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm test
+
+  judge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm judge --category thinking --file tests/thinking-edge-case.md
+        continue-on-error: true  # Hard gate expected
+      - run: pnpm judge --category config --file tests/thinking-edge-case-2-secrets.md
+        continue-on-error: true  # Hard gate expected
+      - run: pnpm judge --category thinking --file tests/clean.txt

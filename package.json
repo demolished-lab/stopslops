@@ -1,0 +1,63 @@
+{
+  "name": "universal-antislop",
+  "version": "1.0.0",
+  "description": "Production-ready anti-slop quality gate: parallel checkers + LLM MITM judge + Hard Gate",
+  "type": "module",
+  "main": "./scripts/run-checkers.mjs",
+  "bin": {
+    "antislop-check": "./scripts/run-checkers.mjs",
+    "antislop-judge": "./scripts/judge.mjs",
+    "antislop-audit": "./scripts/audit.mjs"
+  },
+  "scripts": {
+    "check": "node ./scripts/run-checkers.mjs",
+    "judge": "node ./scripts/judge.mjs",
+    "audit": "node ./scripts/audit.mjs",
+    "security": "node ./scripts/security-audit.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "oxlint skills/",
+    "prepublishOnly": "pnpm test && pnpm check"
+  },
+  "keywords": [
+    "anti-slop",
+    "code-quality",
+    "ai-slop",
+    "llm-judge",
+    "static-analysis",
+    "oxlint",
+    "spectral"
+  ],
+  "author": "Raja",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raja/universal-antislop.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "scripts/",
+    "skills/",
+    "checkers/",
+    "judge/",
+    "registry.json",
+    "antislop.md"
+  ],
+  "devDependencies": {
+    "@stoplight/spectral-cli": "^6.16.3",
+    "@types/node": "^20.12.0",
+    "oxlint": "^1.83.0",
+    "typescript": "^5.4.5",
+    "vitest": "^3.2.1"
+  },
+  "peerDependencies": {
+    "node": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "node": {
+      "optional": false
+    }
+  }
+}

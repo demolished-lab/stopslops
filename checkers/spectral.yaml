@@ -1,0 +1,19 @@
+extends: [[spectral:oas, all]]
+rules:
+  # Quality-focused API rules
+  api-operation-operationId: warn
+  operation-description: warn
+  operation-operationId: warn
+  operation-tags: warn
+  operation-tag-defined: warn
+  no-eval-in-markdown: error
+  no-script-tags-in-markdown: error
+  table-matching-columns: error
+  oas3-api-servers: warn
+  oas3-examples-value-or-externalValue: warn
+  oas3-operation-security-defined: warn
+  oas3-schema: error
+  oas3-server-not-example-com: warn
+  oas3-unused-component: warn
+  oas3-valid-media-example: warn
+  oas3-valid-schema-example: warn

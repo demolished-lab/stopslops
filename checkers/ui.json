@@ -1,0 +1,47 @@
+{
+  "name": "ui",
+  "description": "UI accessibility checker (WCAG 2.1 AA)",
+  "version": "1.0.0",
+  "rules": {
+    "R-25": {
+      "name": "WCAG Contrast",
+      "severity": "error",
+      "description": "Text/background contrast ratio must be >= 4.5:1 (AA) or >= 7:1 (AAA)",
+      "pattern": "color:\\s*#[0-9a-fA-F]{3,6}.*background",
+      "threshold": 4.5
+    },
+    "R-26": {
+      "name": "Focus State",
+      "severity": "error",
+      "description": "Interactive elements must have visible focus states",
+      "pattern": ":focus\\s*\\{[^}]*outline:\\s*none",
+      "invert": true
+    },
+    "R-27": {
+      "name": "Font Size",
+      "severity": "warning",
+      "description": "Font sizes must be >= 12px (WCAG 1.4.4)",
+      "pattern": "font-size:\\s*(\\d+)px",
+      "min": 12
+    },
+    "R-28": {
+      "name": "Alt Text",
+      "severity": "error",
+      "description": "Images must have alt attributes",
+      "pattern": "<img[^>]*(?!alt=)[^>]*>",
+      "invert": true
+    },
+    "R-29": {
+      "name": "Auto-play Media",
+      "severity": "warning",
+      "description": "Media should not autoplay without controls",
+      "pattern": "autoplay(?!.*controls)"
+    },
+    "R-30": {
+      "name": "Form Labels",
+      "severity": "error",
+      "description": "Form inputs must have labels",
+      "pattern": "<input[^>]*(?!.*aria-label)(?!.*id=)[^>]*>"
+    }
+  }
+}

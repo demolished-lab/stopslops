@@ -1,0 +1,44 @@
+# Tests
+tests/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo
+
+# Cache
+.cache/
+*.cache
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Git
+.git/
+.gitignore
+
+# GitHub
+.github/
+
+# Documentation
+*.md
+!README.md
+!CHANGELOG.md
+!LICENSE
