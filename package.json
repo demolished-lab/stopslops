@@ -15,6 +15,8 @@
     "judge": "node ./scripts/judge.mjs",
     "audit": "node ./scripts/audit.mjs",
     "health": "node ./scripts/health.mjs",
+    "api": "node ./scripts/api.mjs",
+    "loadtest": "node ./scripts/loadtest.mjs",
     "security": "node ./scripts/security-audit.mjs",
     "security:full": "node ./scripts/security-audit-full.mjs",
     "typecheck": "node ./scripts/typecheck.mjs",
