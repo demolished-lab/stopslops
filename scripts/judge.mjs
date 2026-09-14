@@ -7,10 +7,18 @@ import { join, resolve, relative } from 'node:path';
 import http from 'node:http';
 import https from 'node:https';
 import { log, error, debug, trackJudge, setPerformance } from './logger.mjs';
+import { ResilientClient } from './resilience.mjs';
 
 const ROOT = process.env.ANTISLOP_ROOT || "C:/Users/Raja/universal-antislop";
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB limit
 const ALLOWED_CATEGORIES = ['general-code', 'tests', 'api', 'docs', 'prompts', 'git', 'config', 'thinking', 'ui', 'copywriting', 'human', 'layoutmobile', 'code'];
+
+// Enterprise resilience: circuit breaker + retry + rate limiter
+const llmClient = new ResilientClient({
+  circuitBreaker: { failureThreshold: 5, resetTimeout: 60000 },
+  retry: { maxRetries: 3, baseDelay: 1000, maxDelay: 10000 },
+  rateLimit: { maxRequests: 10, windowMs: 60000 }
+});
 
 // Graceful error handling
 process.on('uncaughtException', (e) => {
@@ -132,47 +140,55 @@ async function llmGrade(){
     timeout: 30000
   };
   
-  return new Promise((resolve) => {
-    const proto = isOpenAI ? https : http;
-    const req = proto.request(opts, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          const parsed = JSON.parse(data);
-          const content = parsed.choices?.[0]?.message?.content;
-          if(!content) {
-            debug('LLM returned empty content');
-            return resolve(null);
-          }
-          // Try to parse the JSON from the LLM response
-          const jsonMatch = content.match(/\{[\s\S]*\}/);
-          if(jsonMatch) {
-            const llmResult = JSON.parse(jsonMatch[0]);
-            debug(`LLM found ${(llmResult.findings || []).length} issues`);
-            resolve(llmResult.findings || []);
-          } else {
-            debug('LLM response not valid JSON');
-            resolve(null);
-          }
-        } catch(e) {
-          debug('Failed to parse LLM response:', e.message);
-          resolve(null);
-        }
+  try {
+    const result = await llmClient.request(async () => {
+      return new Promise((resolve, reject) => {
+        const proto = isOpenAI ? https : http;
+        const req = proto.request(opts, (res) => {
+          let data = '';
+          res.on('data', chunk => data += chunk);
+          res.on('end', () => {
+            try {
+              const parsed = JSON.parse(data);
+              const content = parsed.choices?.[0]?.message?.content;
+              if(!content) {
+                debug('LLM returned empty content');
+                return resolve(null);
+              }
+              // Try to parse the JSON from the LLM response
+              const jsonMatch = content.match(/\{[\s\S]*\}/);
+              if(jsonMatch) {
+                const llmResult = JSON.parse(jsonMatch[0]);
+                debug(`LLM found ${(llmResult.findings || []).length} issues`);
+                resolve(llmResult.findings || []);
+              } else {
+                debug('LLM response not valid JSON');
+                resolve(null);
+              }
+            } catch(e) {
+              debug('Failed to parse LLM response:', e.message);
+              resolve(null);
+            }
+          });
+        });
+        req.on('error', (e) => {
+          debug('LLM request failed:', e.message);
+          reject(e);
+        });
+        req.on('timeout', () => {
+          debug('LLM request timed out');
+          req.destroy();
+          reject(new Error('LLM request timed out'));
+        });
+        req.write(body);
+        req.end();
       });
     });
-    req.on('error', (e) => {
-      debug('LLM request failed:', e.message);
-      resolve(null);
-    });
-    req.on('timeout', () => {
-      debug('LLM request timed out');
-      req.destroy();
-      resolve(null);
-    });
-    req.write(body);
-    req.end();
-  });
+    return result;
+  } catch (e) {
+    debug('LLM request failed after retries:', e.message);
+    return null;
+  }
 }
 
 // Run both and merge

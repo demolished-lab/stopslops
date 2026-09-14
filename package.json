@@ -7,17 +7,20 @@
   "bin": {
     "antislop-check": "./scripts/run-checkers.mjs",
     "antislop-judge": "./scripts/judge.mjs",
-    "antislop-audit": "./scripts/audit.mjs"
+    "antislop-audit": "./scripts/audit.mjs",
+    "antislop-health": "./scripts/health.mjs"
   },
   "scripts": {
     "check": "node ./scripts/run-checkers.mjs",
     "judge": "node ./scripts/judge.mjs",
     "audit": "node ./scripts/audit.mjs",
+    "health": "node ./scripts/health.mjs",
     "security": "node ./scripts/security-audit.mjs",
     "security:full": "node ./scripts/security-audit-full.mjs",
     "typecheck": "node ./scripts/typecheck.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "oxlint skills/",
     "prepublishOnly": "pnpm test && pnpm check",
     "changeset": "changeset",
@@ -31,7 +34,10 @@
     "llm-judge",
     "static-analysis",
     "oxlint",
-    "spectral"
+    "spectral",
+    "enterprise",
+    "resilience",
+    "circuit-breaker"
   ],
   "author": "Raja",
   "license": "MIT",
