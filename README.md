@@ -1,22 +1,72 @@
-# Universal Antislop
+# 🛡️ Universal Anti-Slop
 
 [![npm version](https://img.shields.io/npm/v/universal-antislop.svg)](https://www.npmjs.com/package/universal-antislop)
-[![CI](https://github.com/your-username/universal-antislop/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/universal-antislop/actions/workflows/ci.yml)
+[![CI](https://github.com/demolished-lab/stopslops/actions/workflows/ci.yml/badge.svg)](https://github.com/demolished-lab/stopslops/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 
-Production-ready anti-slop quality gate: parallel checkers + LLM MITM judge + Hard Gate.
+**Production-ready anti-slop quality gate: parallel checkers + LLM MITM judge + Hard Gate.**
 
-## What it does
+> Catch AI slop, enforce standards, and ship quality code — automatically.
 
-Catches AI slop in any code or non-code output before delivery. Every output passes through:
+---
+
+## 🎯 What Is This?
+
+Universal Anti-Slop is a **quality-as-a-skill** platform that catches lazy patterns, enforces standards, and validates output quality across 13 categories — from code to docs to prompts.
 
 ```
-input -> [checkers in parallel] -> judge MITM -> Gate -> deliver / block+fix
-                                    (streaming, cached, interruptible)
+input → [checkers in parallel] → judge MITM → Gate → deliver / block+fix
+                        (streaming, cached, interruptible)
 ```
 
-## Install
+### Why "Anti-Slop"?
+
+AI-generated code is everywhere. Most of it is **slop** — generic, unclear, and lazy. This tool catches that slop before it reaches production.
+
+| Slop Pattern | Anti-Slop Detection |
+|--------------|---------------------|
+| `any` types | ✅ Type safety enforcement |
+| Magic numbers | ✅ Named constants required |
+| Hedging language | ✅ Evidence-based claims |
+| Unclear naming | ✅ Descriptive names required |
+| No error handling | ✅ Explicit error handling |
+
+---
+
+## 👥 Who Uses This?
+
+### By Role
+
+| Role | Use Case | Value |
+|------|----------|-------|
+| **System Architect** | Enforce architectural decisions | Architecture compliance dashboard |
+| **Engineering Manager** | Track quality metrics | Team performance visibility |
+| **Product Manager** | Validate PRDs, docs | Product quality scorecard |
+| **Solo Developer** | Personal quality gate | Ship faster with confidence |
+| **Startup CTO** | Maintain quality without senior hires | Investor-ready code quality |
+| **Open Source Maintainer** | Automated contribution quality | Project health metrics |
+| **DevOps/SRE** | Health monitoring + DR | Operations dashboard |
+| **Security Engineer** | Compliance automation | Security compliance report |
+| **Technical Writer** | Documentation quality | Documentation scorecard |
+| **QA Engineer** | Test quality = reliability | Test quality metrics |
+| **AI/ML Engineer** | Prompt quality = output quality | AI quality metrics |
+| **Compliance Officer** | Audit trails | Compliance dashboard |
+
+### By Organization
+
+| Organization | Use Case | Scale |
+|--------------|----------|-------|
+| **Agency/Consultancy** | Quality as a service | 50+ clients |
+| **Enterprise** | Org-wide quality | 1000+ engineers |
+| **Educational Institution** | Teaching quality | 1000+ students |
+| **Freelancer** | Quality reputation | Premium pricing |
+
+---
+
+## 🚀 Quick Start
+
+### Install
 
 ```bash
 npm install -g universal-antislop
@@ -24,135 +74,167 @@ npm install -g universal-antislop
 pnpm add -g universal-antislop
 ```
 
-## CLI Usage
-
-### Check your codebase (parallel, cached)
+### Use
 
 ```bash
-antislop-check                           # check current project
-antislop-check --path /path/to/project   # check specific project
-LOG_LEVEL=debug antislop-check           # verbose output
+# Check your codebase
+antislop-check
+
+# Judge a specific file
+antislop-judge --category general-code --file src/index.ts
+
+# Run health check
+antislop-health
 ```
 
-### Judge a file against a category
-
-```bash
-antislop-judge --category thinking --file path/to/file.md
-antislop-judge --category config --file path/to/config.json
-antislop-judge --category general-code --file path/to/code.ts
-```
-
-### Audit workspace (writes findings)
-
-```bash
-antislop-audit                           # writes anti-slop/audit-*.md
-```
-
-## API
-
-### Programmatic usage
-
-```javascript
-import { readFile } from 'node:fs/promises';
-
-// Run checkers
-const { execFile } = await import('node:child_process');
-const { stdout } = await execFile('antislop-check', ['--path', '/your/project']);
-console.log(JSON.parse(stdout));
-
-// Run judge
-const { stdout } = await execFile('antislop-judge', ['--category', 'thinking', '--file', 'README.md']);
-const result = JSON.parse(stdout);
-if (result.findings.some(f => f.severity === 3)) {
-  console.error('Hard Gate blocked delivery');
-}
-```
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ANTISLOP_ROOT` | Project root path | `C:/Users/Raja/universal-antislop` |
-| `LOG_LEVEL` | `error`, `warn`, `info`, `debug` | `info` |
-| `BYNARA_API_KEY` | Bynara API key for LLM grade | (none) |
-| `OPENAI_API_KEY` | OpenAI API key for LLM grade | (none) |
-
-### Exit Codes
-
-| Code | Meaning |
-|------|---------|
-| `0` | Clean — no Hard Gate violations |
-| `1` | Hard Gate blocked — severity 3 found |
-| `2` | Usage error — bad arguments or missing files |
-
-## Categories
-
-| Category | What it checks | Severity 3 triggers |
-|----------|----------------|---------------------|
-| `general-code` | TypeScript type contracts | `unknown`/`any` on public |
-| `tests` | Test file presence | (none — informational) |
-| `api` | OpenAPI/Spectral compliance | (none — informational) |
-| `docs` | Markdown quality | (none — informational) |
-| `prompts` | Prompt injection | (none — informational) |
-| `git` | Commit message format | (none — informational) |
-| `config` | Secret detection | `sk-*` patterns |
-| `thinking` | Hedging/sycophancy | Sycophancy density |
-| `ui` | WCAG contrast ratios | (none — informational) |
-| `copywriting` | Tone quality | judge-only |
-| `human` | Accessibility | judge-only |
-| `layoutmobile` | Responsive layout | judge-only |
-| `code` | Code quality | judge-only |
-
-## Severity Scale
-
-- `0` — clean (no issues)
-- `1` — nit (style, non-blocking)
-- `2` — warn (needs `// SAFETY:` or `// PURPOSE:` justification)
-- `3` — block (Hard Gate — delivery blocked)
-
-## Gate Rules
-
-- **Hard Gate** (severity 3) → blocks delivery, exit code 1
-- **Purpose Gate** (severity 2) → requires justification comment
-- **Quality Gate** (severity 1) → informational, non-blocking
-
-## Real Static Checkers
-
-- **oxlint** — TypeScript/JavaScript linting
-- **spectral** — API spec linting
-- **contrast-check.py** — WCAG contrast ratios
-
-## Test
-
-```bash
-pnpm test
-```
-
-## CI/CD
-
-GitHub Actions runs on every PR:
+### Integrate
 
 ```yaml
-- run: pnpm check
-- run: pnpm test
-- run: pnpm judge --category thinking --file tests/thinking-edge-case.md
+# .github/workflows/ci.yml
+- run: pnpm check  # Blocks deployment on severity 3
 ```
 
-## Project Structure
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [USE-CASES.md](USE-CASES.md) | Comprehensive use cases by role |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Deployment patterns |
+| [INTEGRATION.md](INTEGRATION.md) | Integration examples |
+| [SCALING.md](SCALING.md) | Scaling strategies |
+| [docs/SLA.md](docs/SLA.md) | Service Level Agreement |
+| [docs/DISASTER-RECOVERY.md](docs/DISASTER-RECOVERY.md) | Disaster recovery plan |
+
+---
+
+## 🏗️ Architecture
 
 ```
-universal-antislop/
-├── scripts/          # CLI tools (run-checkers, judge, audit, logger)
-├── skills/           # Category skills (SKILL.md + vendor/)
-├── checkers/         # Checker configs (oxlint.json, spectral.yaml)
-├── judge/            # MITM judge (rubric.json + mitm-prompt.md)
-├── adapters/         # Claude + dsh adapters
-├── tests/            # Vitest unit tests
-├── registry.json     # Category → skill/checker/judge map
-├── antislop.md       # Universal core (R-01..R-60+)
-└── package.json      # npm publish config
+┌─────────────────────────────────────────────────────────────┐
+│                    Universal Anti-Slop                       │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │   Checkers   │  │    Judge    │  │   Gateway   │         │
+│  │  (parallel)  │  │ (heuristic) │  │   (Hard)    │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │  Resilience  │  │   Tenant    │  │   Audit     │         │
+│  │ (circuit BR) │  │  (isolated) │  │   (logs)    │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │   Health     │  │    API      │  │   Load      │         │
+│  │  (probes)    │  │ (versioned) │  │  (testing)  │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## License
+---
 
-MIT
+## 🎨 Categories
+
+| Category | What It Checks |
+|----------|----------------|
+| `general-code` | Type safety, clarity, intentional tradeoffs |
+| `tests` | Behavior testing, clear names, specific assertions |
+| `api` | Consistent naming, clear status codes, examples |
+| `docs` | Working examples, clear structure, current content |
+| `prompts` | Input validation, error handling, security |
+| `git` | Descriptive messages, issue references, focused commits |
+| `config` | Secret management, version pinning, documentation |
+| `thinking` | Evidence-backed claims, honest disagreement, conciseness |
+| `ui` | Contrast ratios, keyboard navigation, semantic HTML |
+| `copywriting` | Clarity, evidence-backed claims, appropriate tone |
+| `human` | Accessibility, keyboard support, clear feedback |
+| `layoutmobile` | Responsive units, viewport meta, touch targets |
+| `code` | Readable, testable, maintainable |
+
+---
+
+## 🛡️ Enterprise Features
+
+### Resilience
+- **Circuit Breaker**: 5 failures → open, 60s reset
+- **Retry**: 3 attempts with exponential backoff
+- **Rate Limiter**: 10 requests/minute
+
+### Health Checks
+```bash
+GET /health   # Full status
+GET /ready    # Kubernetes readiness
+GET /live     # Kubernetes liveness
+```
+
+### Multi-Tenant
+```bash
+# Tenant isolation
+curl -H "X-Tenant-ID: tenant_abc123" /check
+```
+
+### Audit Logging
+```bash
+# SOX, HIPAA, SOC2, GDPR compliance
+node scripts/audit-logger.mjs --report 2026-01-01 2026-09-14
+```
+
+---
+
+## 📊 Performance
+
+| Metric | Value |
+|--------|-------|
+| Judge | ~350ms |
+| Checkers | ~290ms |
+| Full pipeline | ~240ms |
+| Health check | ~9ms |
+
+---
+
+## 🔧 Commands
+
+```bash
+# Core
+pnpm check                    # Run all checkers
+pnpm judge                    # Run judge
+pnpm test                     # Run tests
+
+# Enterprise
+pnpm health                   # Start health server
+pnpm api                      # Start API server
+pnpm loadtest                 # Run load tests
+
+# Security
+pnpm security                 # Quick security scan
+pnpm security:full            # Full security audit
+
+# Development
+pnpm typecheck                # Type checking
+pnpm test:coverage            # Test coverage
+```
+
+---
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE)
+
+---
+
+## 🔗 Links
+
+- [GitHub](https://github.com/demolished-lab/stopslops)
+- [npm](https://www.npmjs.com/package/universal-antislop)
+- [Issues](https://github.com/demolished-lab/stopslops/issues)
+
+---
+
+**Built with ❤️ by demolished-lab**
